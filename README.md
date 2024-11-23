@@ -1,11 +1,8 @@
---- 
-It's just a basic Image Classifier, It classify about the **Animals Picture** more acuurately than the other still in Changes.
----
 ---
 
 # 🖼️ Image Classifier & Chatbot
 
-Welcome to the **Image Classifier & Chatbot**! This Flask-based web application allows you to upload images, classify them using a pre-trained MobileNetV2 model, and engage in a chatbot conversation to learn more about the predictions. 🎉
+Welcome to the **Image Classifier & Chatbot**! This Flask-based web application specializes in classifying **animal pictures** with higher accuracy compared to other objects. 🚀 It is currently a work-in-progress, with further enhancements planned. 🎉
 
 ---
 
