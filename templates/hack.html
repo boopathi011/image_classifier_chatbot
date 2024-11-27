@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Recognition Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #444;
+        }
+        #uploadForm {
+            display: flex;
+            justify-content: center;
+            margin: 20px;
+        }
+        #fileInput {
+            margin-right: 10px;
+        }
+        #result {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 10px;
+            color: #007bff;
+        }
+        #chat {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        #chat-box {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            margin-bottom: 10px;
+        }
+        #chat-box p {
+            margin: 5px 0;
+        }
+        #chat-box p strong {
+            color: #007bff;
+        }
+        #chatForm {
+            display: flex;
+            justify-content: space-between;
+        }
+        #userInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Image Recognition Chatbot</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" name="file" id="fileInput" accept="image/*" required>
+        <button type="submit">Upload</button>
+    </form>
+    <p id="result"></p>
+
+    <div id="chat">
+        <div id="chat-box"></div>
+        <form id="chatForm">
+            <input type="text" id="userInput" placeholder="Type a message..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        // Handle image upload
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData();
+            var fileInput = document.getElementById('fileInput');
+            formData.append('file', fileInput.files[0]);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('result').textContent = "Prediction: " + data.prediction;
+                document.getElementById('chat-box').innerHTML += "<p><strong>Bot:</strong> Based on the image, I see a " + data.prediction + ".</p>";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        // Handle chat messages
+        document.getElementById('chatForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var userInput = document.getElementById('userInput').value;
+            var chatBox = document.getElementById('chat-box');
+
+            // Display user's message
+            chatBox.innerHTML += "<p><strong>You:</strong> " + userInput + "</p>";
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({message: userInput})
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display chatbot's response
+                chatBox.innerHTML += "<p><strong>Bot:</strong> " + data.response + "</p>";
+                document.getElementById('userInput').value = '';
+                chatBox.scrollTop = chatBox.scrollHeight; // Scroll to the bottom
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>
